@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shakespeare</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="page" style="background-color: #6a7a7a;">
+      <section class="section">
+        <div class="columns">
+          <div class="column"></div>
+
+          <div class="column is-two-thirds">
+            <div class="card">
+              <div class="card-content">
+                <label class="title is-centered is-size-3">Shakespeare-App</label>
+              </div>
+
+              <div class="card-content">
+                <p class="subtitle">This app will auto-generate a made up string that will look like either a shakespeare play or an IMDB review!</p>
+                {% block body %}{% endblock %}
+                <form
+                  action="{{ url_for('write_shakespear') }}"
+                  method="POST"
+                  class="write_shakespear">
+                  <dl>
+                    <dt>Prompt</dt>
+                    <dd><input type="text" size="30" name="prompt" /></dd>
+                    <dt>Length</dt>
+                    <dd><input type="number" size="20" name="length"></dd>
+                    <dt>Model</dt>
+                    <dd>
+                      <div class="select">
+                        <select name="model">
+                          <option value="shakespeare">Shakespeare</option>
+                          <option value="imdb">IMDB review</option>
+                        </select>
+                      </div>
+                    </dd>
+                    <br />
+                    <dd><input type="submit" value="Shake it up" /></dd>
+                  </dl>
+                </form>
+              </div>
+            </div>
+
+            <br />
+            <div class="card">
+              <div class="card-content">
+                <div class="columns">
+                  <div class="column"></div>
+                  <div class="column is-two-thirds">
+                    {% for message in get_flashed_messages() %}
+                    <div class="flash">{{ message }}</div>
+                    {% endfor %}
+                    <div class="play">
+                      {% if play != ""%}
+                        <article style="white-space: pre-wrap;">{{ play }}</article>>
+                      {% else %}
+                      <li><em>No entries yet. Add some!</em></li>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="column"></div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+          <div class="column"></div>
+        </div>
+      </section>
+  </body>
+</html>
