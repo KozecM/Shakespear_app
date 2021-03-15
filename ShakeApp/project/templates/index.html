@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="background-color: #6a7a7a;">
   <head>
     <title>Shakespeare</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
@@ -10,7 +10,7 @@
     />
   </head>
   <body>
-    <div class="page" style="background-color: #6a7a7a;">
+    <div class="page">
       <section class="section">
         <div class="columns">
           <div class="column"></div>
@@ -18,7 +18,7 @@
           <div class="column is-two-thirds">
             <div class="card">
               <div class="card-content">
-                <label class="title is-centered is-size-3">Shakespeare-App</label>
+                <label class="title is-centered is-size-3">Text Generator App</label>
               </div>
 
               <div class="card-content">
@@ -35,15 +35,15 @@
                     <dd><input type="number" size="20" name="length"></dd>
                     <dt>Model</dt>
                     <dd>
-                      <div class="select">
-                        <select name="model">
+                      <div class="select" >
+                        <select id="model" name="model">
                           <option value="shakespeare">Shakespeare</option>
                           <option value="imdb">IMDB review</option>
                         </select>
                       </div>
                     </dd>
                     <br />
-                    <dd><input type="submit" value="Shake it up" /></dd>
+                    <dd><input id="submit" type="submit" value="Shake it up" /></dd>
                   </dl>
                 </form>
               </div>
@@ -56,11 +56,11 @@
                   <div class="column"></div>
                   <div class="column is-two-thirds">
                     {% for message in get_flashed_messages() %}
-                    <div class="flash">{{ message }}</div>
+                    <div class="flash title is-size-5"><b>{{ message }}</b></div>
                     {% endfor %}
                     <div class="play">
-                      {% if play != ""%}
-                        <article style="white-space: pre-wrap;">{{ play }}</article>>
+                      {% if script != ""%}
+                        <article style="white-space: pre-wrap;">{{ script|safe }}</article>
                       {% else %}
                       <li><em>No entries yet. Add some!</em></li>
                       {% endif %}
@@ -76,5 +76,20 @@
           <div class="column"></div>
         </div>
       </section>
+
+      <script>
+        let submit_option = document.getElementById('submit')
+        let model_select = document.getElementById("model")
+
+        model_select.onchange = function () {
+          model = model_select.value;
+          if(model == 'imdb'){
+            submit_option.value = 'IMDBest!'
+          }
+          else{
+            submit_option.value ='Shake it up!'
+          }
+        }
+      </script>
   </body>
 </html>

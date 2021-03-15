@@ -14,11 +14,9 @@ for review in iter_df:
   temp_vocab = sorted(set(tfds.as_numpy(review)))
   vocabulary.update(temp_vocab)
 
-
 vocabulary = sorted(vocabulary)
 char2idx = {u:i for i, u in enumerate(vocabulary)}
 idx2char = np.array(vocabulary)
-print(idx2char)
 
 model = tf.keras.models.load_model('models/imdb')
 
