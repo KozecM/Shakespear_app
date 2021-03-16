@@ -22,25 +22,26 @@ def test_index():
 
   assert response.status_code == 200
 
-def test_shakespeare_model():
-  assert Path("project/models/shakespeare/saved_model.pb").is_file()
-
-def test_imdb_model():
-  assert Path("project/models/imdb/saved_model.pb").isfile()
-
-def test_write_shakespeare_page(client):
+def test_write_shakespeare(client):
   rv =client.post(
     "/write",
-    data=dict(prompt="Hello", length="20", model = 'shakespeare'),
+    data=dict(prompt="Test", length="20", model = 'shakespeare'),
     follow_redirects = True
   )
 
-  assert b"Hello" in rv.data
+  assert b"Test" in rv.data
+
+def test_write_imdb(client):
+  rv = client.post(
+    "/write",
+    data=dict(prompt="Test", length="20", model = 'imdb'),
+    follow_redirects=True
+  )
+  assert b"Test" in rv.data
 
 def test_data_loaded():
   set_data('shakespeare')
 
-  print (type(g_vars.idx2char))
   assert g_vars.df != None
   assert g_vars.vocabulary != None
 
@@ -59,3 +60,9 @@ def test_imdb_model():
 
   assert len(result) == 24
   assert "Test" in result 
+
+def test_shakespeare_model_exists():
+  assert os.path.exists("project/models/shakespeare/saved_model.pb")
+
+def test_imdb_model_exists():
+  assert os.path.exists("project/models/imdb/saved_model.pb")
