@@ -87,7 +87,7 @@ def write_shakespear():
 
   session['script'] = generate_text(model, prompt, int(length))
 
-  flash('Here is your Script!')
+  flash('Here is your play!') if model_type == 'shakespeare' else flash('Here is your movie review!') 
   return redirect(url_for('index') )
 
 if __name__ == "__main__":

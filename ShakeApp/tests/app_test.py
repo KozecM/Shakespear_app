@@ -25,7 +25,7 @@ def test_index():
 def test_write_shakespeare(client):
   rv =client.post(
     "/write",
-    data=dict(prompt="Test", length="20", model = 'shakespeare'),
+    data=dict(prompt="Test", length="3", model = 'shakespeare'),
     follow_redirects = True
   )
 
@@ -34,7 +34,7 @@ def test_write_shakespeare(client):
 def test_write_imdb(client):
   rv = client.post(
     "/write",
-    data=dict(prompt="Test", length="20", model = 'imdb'),
+    data=dict(prompt="Test", length="3", model = 'imdb'),
     follow_redirects=True
   )
   assert b"Test" in rv.data
@@ -48,17 +48,17 @@ def test_data_loaded():
 def test_shakespeare_model():
   set_data('shakespeare')
   model = tf.keras.models.load_model('project/models/shakespeare')
-  result = generate_text(model, "Test", 20)
+  result = generate_text(model, "Test", 3)
 
-  assert len(result) == 24
+  assert len(result) == 7
   assert "Test" in result  
 
 def test_imdb_model():
   set_data('imdb')
   model = tf.keras.models.load_model('project/models/imdb')
-  result = generate_text(model, "Test", 20)
+  result = generate_text(model, "Test", 3)
 
-  assert len(result) == 24
+  assert len(result) == 7
   assert "Test" in result 
 
 def test_shakespeare_model_exists():
@@ -67,18 +67,18 @@ def test_shakespeare_model_exists():
 def test_imdb_model_exists():
   assert os.path.exists("project/models/imdb/saved_model.pb")
 
-def test_shakespeare_message():
+def test_shakespeare_message(client):
   rv = client.post(
     "/write",
-    data=dict(prompt="Test", length="5", model = 'shakespeare'),
+    data=dict(prompt="Test", length="1", model = 'shakespeare'),
     follow_redirects=True
   )
   assert b"Here is your play!" in rv.data
 
-def test_shakespeare_message():
+def test_imdb_message(client):
   rv = client.post(
     "/write",
-    data=dict(prompt="Test", length="5", model = 'imdb'),
+    data=dict(prompt="Test", length="1", model = 'imdb'),
     follow_redirects=True
   )
   assert b"Here is your movie review!" in rv.data
