@@ -18,7 +18,7 @@ assert len(tf.config.list_physical_devices('GPU')) > 0
 # load your dataset 
 df = tfds.load(name="imdb_reviews", split='train[:5%]')
 
-# df = tfds.load(name='tiny_shakespeare')['train']
+# df = tfds.load(name='tiny_shakespearee')['train']
 
 df = df.map(lambda x: tf.strings.unicode_split(x['text'], 'UTF-8'))
 iter_df = iter(df)
@@ -31,7 +31,7 @@ for review in iter_df:
 vocabulary = sorted(vocabulary)
 # vocabulary = sorted(set(next(iter(tfds.as_numpy(df)))))
 
-shakespear = df.map(lambda x: {'cur_char': x[:-1], 'next_char': x[1:]})
+shakespeare = df.map(lambda x: {'cur_char': x[:-1], 'next_char': x[1:]})
 
 char2idx = {u:i for i, u in enumerate(vocabulary)}
 idx2char = np.array(vocabulary)
@@ -39,7 +39,7 @@ idx2char = np.array(vocabulary)
 def string_and_vectorized(df):
   vector = []
   temp = []
-  shakespear = []
+  shakespeare = []
   current = 0
   length = len(list(df))
   for example in tfds.as_numpy(df): 
@@ -47,33 +47,33 @@ def string_and_vectorized(df):
     if(current % 10 == 0): print("loop {0}  of  {1}".format(current, length))
     for i in example:
       x = char2idx[i]
-      temp = np.append(vector, x)
-    shakespear = example
+      temp = np.append(temp, x)
+    shakespeare = example
     vector = np.append(vector, temp)
     temp = []
     vector = vector.astype('int64')
   
-  return vector, shakespear
+  return vector, shakespeare
 
 print("String and Vectorize...")
-# shakespear_vector, shakespear = string_and_vectorized(df)
+# shakespeare_vector, shakespeare = string_and_vectorized(df)
 def load_npy(filename):
   temp = np.load(filename)
   return(temp)
 
-shakespear_vector = load_npy('numpy_data/imdb_data.npy')
-# np.save('numpy_data/imdb_data.npy', shakespear_vector)
+shakespeare_vector = load_npy('numpy_data/imdb_data.npy')
+# np.save('numpy_data/imdb_data.npy', shakespeare_vector)
 
-def get_batch(shakespear_vector, seq_length, batch_size):
+def get_batch(shakespeare_vector, seq_length, batch_size):
   # the length of the vectorized songs string
-  n = shakespear_vector.shape[0] - 1
+  n = shakespeare_vector.shape[0] - 1
   # randomly choose the starting indices for the examples in the training batch
   idx = np.random.choice(n-seq_length, batch_size)
   print("idx:", idx)
 
-  input_batch = [shakespear_vector[i : i+seq_length] for i in idx]
+  input_batch = [shakespeare_vector[i : i+seq_length] for i in idx]
 
-  output_batch = [shakespear_vector[i+1 : i+seq_length+1] for i in idx]
+  output_batch = [shakespeare_vector[i+1 : i+seq_length+1] for i in idx]
   # x_batch, y_batch provide the true inputs and targets for network training
   x_batch = np.reshape(input_batch, [batch_size, seq_length])
   y_batch = np.reshape(output_batch, [batch_size, seq_length])
@@ -106,7 +106,7 @@ model = build_model(len(vocabulary), embedding_dim=256, rnn_units=1024, batch_si
 model.summary()
 
 print("getting batch")
-x, y = get_batch(shakespear_vector, seq_length=100, batch_size=32)
+x, y = get_batch(shakespeare_vector, seq_length=100, batch_size=32)
 pred = model(x)
 
 def compute_loss(labels, logits):
@@ -168,7 +168,7 @@ if hasattr(tqdm, '_instances'): tqdm._instances.clear() # clear if it exists
 for iter in tqdm(range(num_training_iterations)):
 
   # Grab a batch and propagate it through the network
-  x_batch, y_batch = get_batch(shakespear_vector, seq_length, batch_size)
+  x_batch, y_batch = get_batch(shakespeare_vector, seq_length, batch_size)
   loss = train_step(x_batch, y_batch)
 
   # Update the progress bar
@@ -207,17 +207,17 @@ def generate_text(model, start_string, generation_length=2000):
   tqdm._instances.clear()
 
   for i in tqdm(range(generation_length)):
-      predictions = model(input_eval)
-      
-      # Remove the batch dimension
-      predictions = tf.squeeze(predictions, 0)
-      
-      predicted_id = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
-      
-      # Pass the prediction along with the previous hidden state
-      #   as the next inputs to the model
-      input_eval = tf.expand_dims([predicted_id], 0)
-      text_generated.extend(idx2char[predicted_id])
+    predictions = model(input_eval)
+    
+    # Remove the batch dimension
+    predictions = tf.squeeze(predictions, 0)
+    
+    predicted_id = tf.random.categorical(predictions, num_samples=1)[-1,0].numpy()
+    
+    # Pass the prediction along with the previous hidden state
+    #   as the next inputs to the model
+    input_eval = tf.expand_dims([predicted_id], 0)
+    text_generated.extend(idx2char[predicted_id])
     
   return (start_string + ''.join(map(chr, text_generated)))
 

@@ -66,3 +66,19 @@ def test_shakespeare_model_exists():
 
 def test_imdb_model_exists():
   assert os.path.exists("project/models/imdb/saved_model.pb")
+
+def test_shakespeare_message():
+  rv = client.post(
+    "/write",
+    data=dict(prompt="Test", length="5", model = 'shakespeare'),
+    follow_redirects=True
+  )
+  assert b"Here is your play!" in rv.data
+
+def test_shakespeare_message():
+  rv = client.post(
+    "/write",
+    data=dict(prompt="Test", length="5", model = 'imdb'),
+    follow_redirects=True
+  )
+  assert b"Here is your movie review!" in rv.data
